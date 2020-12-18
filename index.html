@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babylon JS Prototype</title>
+
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            
+            margin: 0;
+            padding: 0;
+        }
+        #renderCanvas {
+            width: 100%;  
+        }
+        #container{
+            display:block;
+        }
+        .divs{
+            position: relative;
+            top: -800px;
+            left: 20px;
+            width: fit-content;
+        }
+        .spans{
+            padding:20px;
+            font-size: 30px;
+        }
+    </style>
+
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+
+    <!--allows you to import models into your scene. -->
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+
+    <!--allows you to use a touch screen. -->
+    <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script> 
+
+    <!--In order to use the Viewer you need to add its code to your HTML page in a <script> element-->
+    <script src="https://cdn.babylonjs.com/viewer/babylon.viewer.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    
+    
+</head>
+<body>
+    <div id="container"> 
+        <canvas id="renderCanvas"></canvas>   
+    </div>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas,true);
+        var createScene = async function() {
+            var scene = new BABYLON.Scene(engine);
+            var camera = new BABYLON.FreeCamera(
+                "camera1",
+                new BABYLON.Vector3(0, 5, -10),
+                scene
+            );
+            camera.setTarget(BABYLON.Vector3.Zero());
+            camera.attachControl(canvas, true);
+            var light = new BABYLON.HemisphericLight(
+                "light1",
+                new BABYLON.Vector3(0, 1, 0),
+                scene
+            );
+            light.intensity = 0.7;
+            var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
+            sphere.position.y = 2;
+            sphere.position.z = 5;
+            const xr = await scene.createDefaultXRExperienceAsync({
+                // ask for an ar-session
+                uiOptions: {
+                sessionMode: "immersive-ar",
+                },
+            });
+            return scene;
+        };
+
+            var scene = await createScene();
+
+            engine.runRenderLoop(function () {
+            scene.render();
+            });
+        
+        
+        // Watch for browser/canvas resize events
+        window.addEventListener("resize", function () {
+                engine.resize();
+        });
+    
+    </script>
+    
+</body>
+</html>
+
+
+<!--Yes, definetly this.
+You can try
+
+Copy to clipboard
+var scene = await createScene();
+or something like
+
+Copy to clipboard
+scene.then(()=>{
+	engine.runRenderLoop(function () {
+		if (scene) {
+			scene.render();
+		}
+	});
+})-->
